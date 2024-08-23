@@ -1,0 +1,32 @@
+{
+  "name": "tokenize.js",
+  "version": "1.0.0",
+  "description": "An abstract tokenizer for JavaScript and TypeScript.",
+  "main": "public-api.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexporrello/tokenize.js.git"
+  },
+  "keywords": [
+    "tokenizer",
+    "tokenize"
+  ],
+  "author": "Alexander Porrello",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alexporrello/tokenize.js/issues"
+  },
+  "homepage": "https://github.com/alexporrello/tokenize.js#readme",
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.3.3",
+    "source-map-support": "^0.5.21",
+    "ts-jest": "^29.2.4",
+    "typescript": "^5.5.4"
+  }
+}
