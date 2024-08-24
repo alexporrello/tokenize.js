@@ -1,11 +1,20 @@
 import { type OrphanBehavior, type Token, isOrphanBehavior } from './types.js';
+import { Emitter } from './token-event.js';
 
 declare type Consume<T> = {
     until: (until: (val: T) => boolean) => T[];
     while: (whle: (elm: T) => boolean) => T[];
 };
 
+export declare type TokenEvent = {
+    next: Token;
+};
+
 export abstract class Tokenizer<T, R extends Token> {
+    public onNextToken$ = new Emitter<{
+        next: T;
+    }>();
+
     public tokens: R[] = [];
     public length: number;
 
@@ -19,9 +28,13 @@ export abstract class Tokenizer<T, R extends Token> {
         return this.length - this.tokens.length;
     }
 
+    /**
+     * Call to kick off tokenization.
+     */
     public tokenize() {
         while ((this._val = this.vals.shift())) {
             this.onNextToken(this._val);
+            this.onNextToken$.emit('next', this._val);
         }
         return this;
     }
@@ -50,7 +63,6 @@ export abstract class Tokenizer<T, R extends Token> {
     public consume(...args: (OrphanBehavior | T | undefined)[]): Consume<T> {
         let orphanBehavior: OrphanBehavior = 'UNSHIFT_ORPHAN';
         let lastToken: T | undefined;
-        let val: T | undefined;
 
         args.forEach((arg) => {
             if (isOrphanBehavior(arg)) {
@@ -60,23 +72,8 @@ export abstract class Tokenizer<T, R extends Token> {
             }
         });
 
+        let val: T | undefined;
         val ??= this.next();
-
-        const handleOrphan = (elms: T[], elm: T | undefined) => {
-            if (elm) {
-                switch (orphanBehavior) {
-                    case 'CONSUME_ORPHAN':
-                        elms.push(elm);
-                        return elms;
-                    case 'DISCARD_ORPHAN':
-                        return elms;
-                    case 'UNSHIFT_ORPHAN':
-                        this.vals.unshift(elm);
-                }
-            }
-
-            return elms;
-        };
 
         const elms: T[] = lastToken ? [lastToken] : [];
 
@@ -86,16 +83,36 @@ export abstract class Tokenizer<T, R extends Token> {
                     elms.push(val);
                     val = this.vals.shift();
                 }
-                return handleOrphan(elms, val);
+                return this._handleOrphan(elms, val, orphanBehavior);
             },
             while: (whle: (elm: T) => boolean): T[] => {
                 while (val && whle(val)) {
                     elms.push(val);
                     val = this.vals.shift();
                 }
-                return handleOrphan(elms, val);
+                return this._handleOrphan(elms, val, orphanBehavior);
             }
         };
+    }
+
+    private _handleOrphan(
+        elms: T[],
+        elm: T | undefined,
+        orphanBehavior: OrphanBehavior
+    ) {
+        if (elm) {
+            switch (orphanBehavior) {
+                case 'CONSUME_ORPHAN':
+                    elms.push(elm);
+                    return elms;
+                case 'DISCARD_ORPHAN':
+                    return elms;
+                case 'UNSHIFT_ORPHAN':
+                    this.vals.unshift(elm);
+            }
+        }
+
+        return elms;
     }
 
     /**

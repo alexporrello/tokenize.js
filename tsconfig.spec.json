@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "outDir": "./spec",
+        "module": "NodeNext",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "target": "es2017",
+        "lib": [
+            "es2020"
+        ],
+        "incremental": true,
+        "types": [
+            "jest",
+            "node"
+        ],
+        "sourceMap": true,
+        "removeComments": false,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
+}

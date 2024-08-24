@@ -6,6 +6,9 @@
   "scripts": {
     "test": "jest"
   },
+  "bin": {
+    "ntest": "./test/test.js"
+  },
   "type": "module",
   "repository": {
     "type": "git",
@@ -23,10 +26,13 @@
   "homepage": "https://github.com/alexporrello/tokenize.js#readme",
   "devDependencies": {
     "@types/node": "^22.5.0",
+    "@types/yargs": "^17.0.33",
+    "chalk": "^5.3.0",
     "jest": "^29.7.0",
     "prettier": "^3.3.3",
     "source-map-support": "^0.5.21",
     "ts-jest": "^29.2.4",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "yargs": "^17.7.2"
   }
 }
