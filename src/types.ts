@@ -14,7 +14,6 @@ export function isOrphanBehavior(val: any): val is OrphanBehavior {
 }
 
 export declare interface Token {
-    value: string;
+    value: any;
     position: number;
-    type: any;
 }

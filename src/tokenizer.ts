@@ -1,20 +1,11 @@
 import { type OrphanBehavior, type Token, isOrphanBehavior } from './types.js';
-import { Emitter } from './token-event.js';
 
 declare type Consume<T> = {
     until: (until: (val: T) => boolean) => T[];
     while: (whle: (elm: T) => boolean) => T[];
 };
 
-export declare type TokenEvent = {
-    next: Token;
-};
-
 export abstract class Tokenizer<T, R extends Token> {
-    public onNextToken$ = new Emitter<{
-        next: T;
-    }>();
-
     public tokens: R[] = [];
     public length: number;
 
@@ -34,7 +25,6 @@ export abstract class Tokenizer<T, R extends Token> {
     public tokenize() {
         while ((this._val = this.vals.shift())) {
             this.onNextToken(this._val);
-            this.onNextToken$.emit('next', this._val);
         }
         return this;
     }
