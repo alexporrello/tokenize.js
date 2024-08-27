@@ -197,11 +197,13 @@ class JsonTokenizer extends Tokenizer<string, JsonToken> {
 
 namespace MyJSON {
     /**
-     * Parses the final JSON object from its tokens.
+     * Parse a JSON object from a string.
      */
     export function parse<T>(jsonString: string) {
+        // Convert the JSON string into tokens
         const tokens = new JsonTokenizer([...jsonString]).tokenize().tokens;
 
+        // Shift the first token, which will be the root element
         const root = tokens.shift();
 
         if (!root) throw new SyntaxError('JSON object must have a root token.');

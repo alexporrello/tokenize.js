@@ -4,4 +4,7 @@
         "src/public-api.ts"
     ],
     "out": "docs",
+    "plugin": [
+        "typedoc-plugin-markdown"
+    ],
 }

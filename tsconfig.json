@@ -15,6 +15,7 @@
         ],
         "sourceMap": true,
         "removeComments": false,
+        "declaration": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
