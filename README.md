@@ -1,7 +1,3 @@
-**@fsnjs/tokenize** • [**Docs**](./docs/globals.md)
-
----
-
 # @fsnjs/tokenize
 
 `@fsnjs/tokenize` is a zero-dependency library that exports the abstract
