@@ -1,6 +1,6 @@
-**@fsnjs/tokenize** • [**Docs**](./docs/globals.md)
+**@fsnjs/tokenize** • [**Docs**](globals.md)
 
----
+***
 
 # @fsnjs/tokenize
 

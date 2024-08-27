@@ -193,11 +193,16 @@ class JsonTokenizer extends Tokenizer<string, JsonToken> {
 
         throw 'Unexpected char encountered "' + value + '"';
     }
+}
 
-    parse<T>() {
-        this.tokenize();
+namespace MyJSON {
+    /**
+     * Parses the final JSON object from its tokens.
+     */
+    export function parse<T>(jsonString: string) {
+        const tokens = new JsonTokenizer([...jsonString]).tokenize().tokens;
 
-        const root = this.tokens.shift();
+        const root = tokens.shift();
 
         if (!root) throw new SyntaxError('JSON object must have a root token.');
 
@@ -207,13 +212,13 @@ class JsonTokenizer extends Tokenizer<string, JsonToken> {
             throw new SyntaxError('JSON object root token must have values.');
         }
 
-        if (type === 'array') return <T>this.parseArray(value);
-        if (type === 'object') return <T>this.parseObject(value);
+        if (type === 'array') return <T>parseArray(value);
+        if (type === 'object') return <T>parseObject(value);
 
         throw new Error('Cannot parse JSON object');
     }
 
-    parseObject(objChildren: JsonToken[]) {
+    function parseObject(objChildren: JsonToken[]) {
         const obj: any = {};
 
         for (let { value, key, type } of objChildren) {
@@ -221,12 +226,12 @@ class JsonTokenizer extends Tokenizer<string, JsonToken> {
 
             if (Array.isArray(value) && key) {
                 if (type === 'array') {
-                    obj[key] = this.parseArray(value);
+                    obj[key] = parseArray(value);
                     continue;
                 }
 
                 if (type === 'object') {
-                    obj[key] = this.parseObject(value);
+                    obj[key] = parseObject(value);
                     continue;
                 }
             }
@@ -240,18 +245,18 @@ class JsonTokenizer extends Tokenizer<string, JsonToken> {
         return obj;
     }
 
-    parseArray(arrChildren: JsonToken[]) {
+    function parseArray(arrChildren: JsonToken[]) {
         const arr: any[] = [];
 
         for (let { value, type } of arrChildren) {
             if (Array.isArray(value)) {
                 if (type === 'array') {
-                    arr.push(this.parseArray(value));
+                    arr.push(parseArray(value));
                     continue;
                 }
 
                 if (type === 'object') {
-                    arr.push(this.parseObject(value));
+                    arr.push(parseObject(value));
                     continue;
                 }
             }
@@ -268,7 +273,7 @@ describe('Tokenizer', () => {
     const tokenizer = new JsonTokenizer([...jsonStr]);
 
     test('Can tokenize string', () => {
-        const tokens = tokenizer.parse<any>();
+        const tokens = MyJSON.parse(jsonStr);
         assert.equal(JSON.stringify(tokens), jsonStr);
     });
 });

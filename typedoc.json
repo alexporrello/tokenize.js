@@ -1,0 +1,10 @@
+{
+    "$schema": "https://typedoc-plugin-markdown.org/schema.json",
+    "entryPoints": [
+        "src/public-api.ts"
+    ],
+    "out": "docs",
+    "plugin": [
+        "typedoc-plugin-markdown"
+    ],
+}
