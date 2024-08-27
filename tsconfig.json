@@ -37,6 +37,9 @@
         "resolveJsonModule": true
     },
     "include": [
-        "src/public-api.ts"
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "src/**/*.spec.ts"
     ]
 }

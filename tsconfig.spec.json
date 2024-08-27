@@ -10,7 +10,6 @@
         ],
         "incremental": true,
         "types": [
-            "jest",
             "node"
         ],
         "sourceMap": true,

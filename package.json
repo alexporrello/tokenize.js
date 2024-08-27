@@ -1,6 +1,6 @@
 {
   "name": "@fsnjs/tokenize",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An abstract tokenizer.",
   "main": "public-api.js",
   "scripts": {
@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/alexporrello/tokenize.js/issues"
   },
-  "homepage": "https://github.com/alexporrello/tokenize.js#readme",
+  "homepage": "https://alexporrello.github.io/tokenize.js/",
   "devDependencies": {
     "@types/node": "^22.5.0",
     "prettier": "^3.3.3",
