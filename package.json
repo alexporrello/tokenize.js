@@ -5,6 +5,7 @@
   "main": "public-api.js",
   "scripts": {
     "publish": "cd dist && npm publish --access public",
+    "unpublish": "npm unpublish @fsnjs/tokenize@latest",
     "build": "tsc",
     "build:docs": "npx typedoc"
   },
