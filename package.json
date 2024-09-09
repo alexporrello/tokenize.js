@@ -1,6 +1,6 @@
 {
   "name": "@fsnjs/tokenize",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "An abstract tokenizer.",
   "main": "public-api.js",
   "scripts": {
