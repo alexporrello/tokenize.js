@@ -7,7 +7,11 @@ declare type Consume<T> = {
 
 export abstract class Tokenizer<T, R extends Token> {
     /**
-     * An array of tokens producted by `tokenize()`
+     * An array of tokens productd by `tokenize()`.
+     *
+     * @usageNotes Tokens are not pushed automatically into `tokens`
+     * within the body of `tokenize()`. You must do that manually.
+     *
      * @public
      */
     public tokens: R[] = [];
