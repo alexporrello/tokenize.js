@@ -1,14 +1,13 @@
 import { Tokenizer } from '../tokenizer.js';
-import { Token } from '../types.js';
 
-class CsvTokenizer extends Tokenizer<string, Token> {
+// @to-do Implement `StringTokenizer` here.
+class CsvTokenizer extends Tokenizer<string, string[]> {
     /**
      * In this instance, using the built-in `tokens` object
      * is unnecessary, as the data structure of a CSV file
      * is simple enough to do a lot of the parsing within the
      * actual tokenizer.
      */
-    public lines: string[][] = [[]];
 
     /** The index of the line being parsed. **/
     public ln_index = 0;
@@ -28,7 +27,7 @@ class CsvTokenizer extends Tokenizer<string, Token> {
             this._pushValIfEmpty();
             this.ln_index++;
             this.col_index = 0;
-            this.lines[this.ln_index] = [];
+            this.tokens[this.ln_index] = [];
             return;
         }
 
@@ -36,13 +35,13 @@ class CsvTokenizer extends Tokenizer<string, Token> {
         // might have a delimiter, so we handle it as a special case.
         if (/"/.test(val)) {
             const consumed = this.consumeQuotedVal();
-            this.lines[this.ln_index].push(consumed);
+            this.tokens[this.ln_index].push(consumed);
             return;
         }
 
         // Otherwise, we consume the cell value
         const consumed = this.consumeVal(val);
-        this.lines[this.ln_index].push(consumed);
+        this.tokens[this.ln_index].push(consumed);
     }
 
     /**
@@ -50,8 +49,8 @@ class CsvTokenizer extends Tokenizer<string, Token> {
      * string to avoid null errors when parsing.
      */
     private _pushValIfEmpty() {
-        if (!this.lines[this.ln_index][this.col_index]) {
-            this.lines[this.ln_index][this.col_index] = '';
+        if (!this.tokens[this.ln_index][this.col_index]) {
+            this.tokens[this.ln_index][this.col_index] = '';
         }
     }
 
@@ -61,7 +60,7 @@ class CsvTokenizer extends Tokenizer<string, Token> {
      * @returns A cell value.
      */
     consumeVal(val: string) {
-        return this.consume(val, 'UNSHIFT_ORPHAN')
+        return this.consume(val)
             .until((val) => /\n|,/.test(val))
             .join('');
     }
@@ -75,14 +74,14 @@ class CsvTokenizer extends Tokenizer<string, Token> {
         const v = this.consume('DISCARD_ORPHAN')
             .until((val) => /\n|"/.test(val))
             .join('');
-        this.next();
+        this.shift();
         return v;
     }
 }
 
 namespace CSV {
     export function parse<T>(csv: string, headers: boolean = true): T[] {
-        const lines = new CsvTokenizer([...csv]).tokenize().lines;
+        const lines = new CsvTokenizer([...csv]).tokenize().tokens;
 
         let headerRow = lines.shift();
         if (!headerRow) return <T[]>[];

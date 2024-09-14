@@ -2,7 +2,7 @@ import { isNativeError } from 'util/types';
 
 import { colors } from './colors.js';
 
-/** Safely assert that `val` is a `PgSyntaxError` */
+/** Safely assert that `val` is a `TokenizerError` */
 export function isTokenizerError(val: any): val is TokenizerError {
     return (
         val !== null &&
@@ -11,6 +11,12 @@ export function isTokenizerError(val: any): val is TokenizerError {
         'raw' in val &&
         'position' in val
     );
+}
+
+export declare interface FormatOptions {
+    trimLength?: number;
+    lineNumbers?: boolean;
+    showOnlyErrorLn?: boolean;
 }
 
 /**
@@ -27,12 +33,42 @@ export class TokenizerError extends SyntaxError {
         super(message);
     }
 
-    public prettyPrint() {
+    /**
+     * Formats the error message for printing.
+     * @param opts Define formatting options
+     * @returns `raw` with a caret pointing to the error under
+     * the error position.
+     * @deprecated Use `format` instead. `prettyPrint` will be removed
+     * in a future version.
+     */
+    public prettyPrint(opts: FormatOptions = {}) {
         const { message, prettyPrinted } = this._formatError(
             this.message,
             this.raw,
             this.position,
-            this.path
+            this.path,
+            opts.lineNumbers,
+            opts.trimLength
+        );
+
+        return message + (prettyPrinted ? '\n\n' + prettyPrinted : '');
+    }
+
+    /**
+     * Formats the error message for printing.
+     * @param opts Define formatting options
+     * @returns `raw` with a caret pointing to the error under
+     * the error position.
+     */
+    public format(opts: FormatOptions = {}) {
+        const { message, prettyPrinted } = this._formatError(
+            this.message,
+            this.raw,
+            this.position,
+            this.path,
+            opts.lineNumbers,
+            opts.trimLength,
+            opts.showOnlyErrorLn
         );
 
         return message + (prettyPrinted ? '\n\n' + prettyPrinted : '');
@@ -42,12 +78,22 @@ export class TokenizerError extends SyntaxError {
         message: string,
         raw: string,
         position: number,
-        path?: string
+        path?: string,
+        lineNumbers?: boolean,
+        trimLength?: number,
+        showOnlyErrorLn?: boolean
     ) {
         try {
             let { column, row, prettyPrinted } = this._highlightErr(
                 raw,
                 position
+            );
+
+            prettyPrinted = this._applyOpts(
+                prettyPrinted,
+                lineNumbers,
+                trimLength,
+                showOnlyErrorLn
             );
 
             let syntaxError = 'SyntaxError';
@@ -119,6 +165,65 @@ export class TokenizerError extends SyntaxError {
         const column = `${errLnStart.length}`;
 
         return { column, row, prettyPrinted };
+    }
+
+    private _applyOpts(
+        formattedError: string,
+        lineNumbers: boolean = true,
+        trimLength?: number,
+        showOnlyErrorLn?: boolean
+    ) {
+        let { lnIndex, numbered } = this._addLnNumbers(
+            formattedError,
+            lineNumbers
+        );
+
+        if (showOnlyErrorLn) {
+            return [numbered[lnIndex - 1], numbered[lnIndex]].join('\n');
+        }
+
+        if (trimLength === undefined) return numbered.join('\n');
+
+        let start: number;
+        let end: number | undefined;
+
+        if (lnIndex < trimLength) {
+            start = 0;
+            end = trimLength;
+        } else if (lnIndex > numbered.length - trimLength) {
+            start = numbered.length - trimLength;
+        } else {
+            start = lnIndex - trimLength;
+            end = lnIndex + trimLength;
+        }
+
+        return numbered.slice(start, end).join('\n');
+    }
+
+    private _addLnNumbers(formattedError: string, lineNumbers: boolean) {
+        let lnIndex = -1;
+        let index = 0;
+
+        let numbered = formattedError.split(/\n/g);
+
+        if (lineNumbers) {
+            numbered = numbered.map((ln) => {
+                if (ln.includes('^')) {
+                    lnIndex = index;
+                    return '  ' + ln;
+                }
+                index += 1;
+
+                let lnNum = index < 10 ? '0' + index : index;
+                if (!colors) return `${lnNum} ${ln}`;
+                return `${colors.bgGray(index < 10 ? '0' + index : index)} ${ln}`;
+            });
+        }
+
+        return {
+            lnIndex,
+            numbered
+        };
     }
 
     /**

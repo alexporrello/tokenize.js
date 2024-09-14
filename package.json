@@ -1,6 +1,6 @@
 {
   "name": "@fsnjs/tokenize",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "description": "An abstract tokenizer.",
   "main": "public-api.js",
   "scripts": {
@@ -16,7 +16,9 @@
   },
   "keywords": [
     "tokenizer",
-    "tokenize"
+    "tokenize",
+    "parse",
+    "parser"
   ],
   "author": "Alexander Porrello",
   "license": "MIT",
@@ -26,6 +28,7 @@
   "homepage": "https://alexporrello.github.io/tokenize.js/",
   "devDependencies": {
     "@types/node": "^22.5.0",
+    "changelog": "^1.4.2",
     "prettier": "^3.3.3",
     "source-map-support": "^0.5.21",
     "typedoc": "^0.26.6",
