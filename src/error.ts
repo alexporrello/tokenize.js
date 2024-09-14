@@ -214,7 +214,7 @@ export class TokenizerError extends SyntaxError {
                 }
                 index += 1;
 
-                let lnNum = index < 10 ? '0' + index : index;
+                let lnNum = index < 10 ? ' ' + index : index;
                 if (!colors) return `${lnNum} ${ln}`;
                 return `${colors.bgGray(index < 10 ? '0' + index : index)} ${ln}`;
             });

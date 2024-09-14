@@ -1,6 +1,5 @@
 import { Tokenizer } from '../tokenizer.js';
 
-// @to-do Implement `StringTokenizer` here.
 class CsvTokenizer extends Tokenizer<string, string[]> {
     /**
      * In this instance, using the built-in `tokens` object

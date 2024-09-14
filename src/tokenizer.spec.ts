@@ -23,6 +23,7 @@ const jsonStr = JSON.stringify(json, null, 4);
 describe('Tokenizer', () => {
     test('Can tokenize string', () => {
         const tokens = MyJSON.parse(jsonStr);
+        console.log(tokens);
         assert.equal(JSON.stringify(tokens, null, 4), jsonStr);
     });
 });

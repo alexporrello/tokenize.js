@@ -1,6 +1,6 @@
 import { exit } from 'process';
 import { isTokenizerError, TokenizerError } from '../error.js';
-import { Tokenizer } from '../tokenizer.js';
+import { StringTokenizer } from '../string-tokenizer.js';
 
 interface JsonToken {
     position: number;
@@ -9,16 +9,18 @@ interface JsonToken {
     value: string | number | boolean | JsonToken[];
 }
 
-export class JsonTokenizer extends Tokenizer<string, JsonToken> {
+export class JsonTokenizer extends StringTokenizer<JsonToken> {
     /**
      * A base syntax error that we can `fork()` if we encounter
      * errors while tokenizing.
      */
     private _baseError: TokenizerError;
 
-    constructor(vals: string[]) {
-        super(vals);
-        this._baseError = new TokenizerError('', vals.join(''), 0);
+    constructor(vals: string) {
+        super(vals, '', {
+            wordRegex: /\w|-|_|\.|\d| /
+        });
+        this._baseError = new TokenizerError('', vals, 0);
     }
 
     /**
@@ -87,7 +89,7 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
         const context: 'OBJ' | 'ARR' = endToken === '}' ? 'OBJ' : 'ARR';
 
         let val = '';
-        while (val !== endToken) {
+        while (this.vals.length > 0) {
             val = this.shift();
 
             // If we've reached the terminating character, we can return.
@@ -115,8 +117,9 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
             }
 
             if (val === '"') {
-                const key = this._consumeWord();
-                const next = this._consumeWhitespace(this.shift());
+                const key = this.consume().until((value) => value === '"');
+                this.shift();
+                const next = this.consumeWhitespace();
 
                 if (next === ':') {
                     innerVals.push(this._consumeKeyValue(key));
@@ -155,7 +158,7 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
 
             if (/\d/.test(val)) {
                 innerVals.push({
-                    value: this._consumeNumber(val),
+                    value: this.consumeNumber(val),
                     position
                 });
                 continue;
@@ -187,7 +190,7 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
      * object, or array
      */
     private _consumeKeyValue(key: string): JsonToken {
-        let value = this._consumeWhitespace(this.shift());
+        let value = this.consumeWhitespace();
 
         const position = this.position;
 
@@ -209,70 +212,45 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
             };
         }
 
+        let kv: JsonToken | undefined;
+
         if (value === '"') {
-            return {
+            kv = {
                 key,
-                value: this._consumeWord(),
+                value: this.consume().until((val) => val === '"'),
                 position: this.position
             };
-        }
-
-        if (/\d/.test(value)) {
-            return {
+        } else if (/\d/.test(value)) {
+            kv = {
                 key,
-                value: this._consumeNumber(value),
+                value: this.consumeNumber(value),
                 position: this.position
             };
-        }
-
-        if (/\w/.test(value)) {
-            return {
+        } else if (/\w/.test(value)) {
+            kv = {
                 key,
                 value: this._consumeBoolean(value),
                 position: this.position
             };
         }
 
-        throw this._baseError.fork(
-            'Unexpected char encountered "' + value + '"',
-            position
-        );
-    }
+        if (!kv) {
+            throw this._baseError.fork(
+                'Unexpected char encountered "' + value + '"',
+                position
+            );
+        }
 
-    /**
-     * Consumes vals until a non-whitespace val is encountered
-     * @param char A value from `vals`
-     * @returns The next value unshifted from `vals` that is not a
-     * whitespace character
-     */
-    private _consumeWhitespace(char: string) {
-        while (/\s|\n/.test(char)) char = this.shift();
-        return char;
-    }
+        if (this.peek() === ',') {
+            console.log(this.peek());
+            this.shift();
+        }
 
-    /**
-     * Consumes chars until `endRegExp` matches the char.
-     * @param startChar (default: `"`) The char that starts the word
-     * @param endRegExp (default: `/"/`) A regular expression that marks the end
-     * of the "word"
-     */
-    private _consumeWord(startChar = '"', endRegExp = /"/) {
-        return this.consume(startChar)
-            .until((val) => endRegExp.test(val))
-            .join('');
-    }
+        if (this.peek() === '"') {
+            this.shift();
+        }
 
-    /**
-     * Consumes a number, given the number char that was unshifted
-     * @param startNumber The number character that starts the number
-     * @returns The consumed number
-     */
-    private _consumeNumber(startNumber: string) {
-        return Number(
-            this.consume(startNumber)
-                .while((val) => /\d/.test(val))
-                .join('')
-        );
+        return kv;
     }
 
     /**
@@ -281,19 +259,15 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
      * @returns The consumed boolean
      */
     private _consumeBoolean(startChar: string) {
-        const position = this.position;
-        const booleanOrOther = this.consume(startChar)
-            .while((val) => /\w/.test(val))
-            .join('');
+        const booleanOrOther = this.consume(startChar).while((val) =>
+            /\w/.test(val)
+        );
 
-        if (/true|false/.test(booleanOrOther)) {
+        if (booleanOrOther === 'true' || booleanOrOther === 'false') {
             return booleanOrOther === 'true';
         }
 
-        throw this._baseError.fork(
-            `Expected a boolean, received ${booleanOrOther}`,
-            position
-        );
+        throw new Error(`Expected boolean, received ${booleanOrOther}.`);
     }
 }
 
@@ -307,7 +281,7 @@ export namespace MyJSON {
     export function parse<T>(jsonString: string) {
         try {
             // Convert the JSON string into tokens
-            const tokens = new JsonTokenizer([...jsonString]).tokenize().tokens;
+            const tokens = new JsonTokenizer(jsonString).tokenize().tokens;
 
             // Shift the first token, which will be the root element
             const root = tokens.shift();
