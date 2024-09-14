@@ -1,9 +1,9 @@
 import { exit } from 'process';
 import { isTokenizerError, TokenizerError } from '../error.js';
 import { Tokenizer } from '../tokenizer.js';
-import { Token } from '../types.js';
 
-interface JsonToken extends Token {
+interface JsonToken {
+    position: number;
     key?: string;
     type?: 'array' | 'object';
     value: string | number | boolean | JsonToken[];
@@ -88,7 +88,7 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
 
         let val = '';
         while (val !== endToken) {
-            val = this.next();
+            val = this.shift();
 
             // If we've reached the terminating character, we can return.
             if (
@@ -116,7 +116,7 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
 
             if (val === '"') {
                 const key = this._consumeWord();
-                const next = this._consumeWhitespace(this.next());
+                const next = this._consumeWhitespace(this.shift());
 
                 if (next === ':') {
                     innerVals.push(this._consumeKeyValue(key));
@@ -187,7 +187,7 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
      * object, or array
      */
     private _consumeKeyValue(key: string): JsonToken {
-        let value = this._consumeWhitespace(this.next());
+        let value = this._consumeWhitespace(this.shift());
 
         const position = this.position;
 
@@ -246,7 +246,7 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
      * whitespace character
      */
     private _consumeWhitespace(char: string) {
-        while (/\s|\n/.test(char)) char = this.next();
+        while (/\s|\n/.test(char)) char = this.shift();
         return char;
     }
 
@@ -257,7 +257,7 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
      * of the "word"
      */
     private _consumeWord(startChar = '"', endRegExp = /"/) {
-        return this.consume(startChar, 'CONSUME_ORPHAN')
+        return this.consume(startChar)
             .until((val) => endRegExp.test(val))
             .join('');
     }
@@ -269,7 +269,7 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
      */
     private _consumeNumber(startNumber: string) {
         return Number(
-            this.consume(startNumber, 'CONSUME_ORPHAN')
+            this.consume(startNumber)
                 .while((val) => /\d/.test(val))
                 .join('')
         );
@@ -282,7 +282,7 @@ export class JsonTokenizer extends Tokenizer<string, JsonToken> {
      */
     private _consumeBoolean(startChar: string) {
         const position = this.position;
-        const booleanOrOther = this.consume(startChar, 'UNSHIFT_ORPHAN')
+        const booleanOrOther = this.consume(startChar)
             .while((val) => /\w/.test(val))
             .join('');
 

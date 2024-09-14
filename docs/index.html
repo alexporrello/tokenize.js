@@ -5,6 +5,76 @@ needs to be broken down into tokens for further processing.</p>
 that is designed to take in a sequence of values
 (e.g., characters, objects, etc.) and convert them into structured tokens
 that can later be processed by another part of the application.</p>
-<p>You can view <a href="https://alexporrello.github.io/tokenize.js/">detailed documentation here</a>
-and <a href="https://github.com/alexporrello/tokenize.js/tree/main/src/example">examples here</a>.</p>
-</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#md:fsnjstokenize"><span>@fsnjs/tokenize</span></a></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="assets/icons.svg#icon-1"></use></svg><span>@fsnjs/tokenize</span></a><ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base="."><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
+<p>An additional export added in v2.0.0 is <code>StringTokenizer</code> that provides
+various functions that are useful when parsing string inputs.</p>
+<p>You can view <a href="https://alexporrello.github.io/tokenize.js/">detailed documentation here</a>.</p>
+<a id="md:usage-notes" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Usage Notes<a href="#md:usage-notes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>To see <code>Tokenizer</code> in action, check out <a href="https://github.com/alexporrello/tokenize.js/tree/main/src/example">examples here</a>.</p>
+<a id="md:tokenizer-error" class="tsd-anchor"></a><h3 class="tsd-anchor-link"><code>Tokenizer Error</code><a href="#md:tokenizer-error" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><p>The <code>Tokenizer Error</code> class is an extension of <code>SyntaxError</code> that
+provides a <code>format</code> function. This format function provides you with an
+error string in the following format:</p>
+<pre><code class="bash"><span class="hl-0">/path/to/my_script.ts:2:4</span><span class="hl-1"> </span><span class="hl-2">-</span><span class="hl-1"> </span><span class="hl-2">error:</span><span class="hl-1"> </span><span class="hl-2">This</span><span class="hl-1"> </span><span class="hl-2">is</span><span class="hl-1"> </span><span class="hl-2">a</span><span class="hl-1"> </span><span class="hl-2">dumb</span><span class="hl-1"> </span><span class="hl-2">function,</span><span class="hl-1"> </span><span class="hl-2">isn&#39;t it.</span><br/><br/><span class="hl-2">1  function my_function() {</span><br/><span class="hl-2">2      throw new Error(`This is a dumb function, isn&#39;t</span><span class="hl-1"> </span><span class="hl-2">it.`);</span><br/><span class="hl-2">       </span><span class="hl-0">^</span><br/><span class="hl-0">3</span><span class="hl-2">  }</span>
+</code><button type="button">Copy</button></pre>
+
+<p>The <code>format</code> function accepts an object that has the parameters:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>trimLength</td>
+<td><code>number</code>, <code>undefined</code></td>
+<td><code>null</code></td>
+<td>The number of lines to precede and follow the error line.</td>
+</tr>
+<tr>
+<td>lineNumbers</td>
+<td><code>boolean</code>, <code>undefined</code></td>
+<td><code>true</code></td>
+<td>Whether line numbers should be prepended to each line.</td>
+</tr>
+<tr>
+<td>showOnlyErrorLn</td>
+<td><code>boolean</code>, <code>undefined</code></td>
+<td><code>null</code></td>
+<td>Whether only the error line and caret should be shown.</td>
+</tr>
+</tbody>
+</table>
+<a id="md:registercolorfunctions" class="tsd-anchor"></a><h4 class="tsd-anchor-link"><code>registerColorFunctions</code><a href="#md:registercolorfunctions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If you would like your error messages to be automatically colorized,
+you can register color functions from a library like <code>Chalk</code> with this method.</p>
+<a id="md:registersyntaxhighlighter" class="tsd-anchor"></a><h4 class="tsd-anchor-link"><code>registerSyntaxHighlighter</code><a href="#md:registersyntaxhighlighter" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><p>If you would like the code in your error messages to be colorized,
+you can register a function that colorizes the output code with this method.</p>
+<a id="md:changelog" class="tsd-anchor"></a><h2 class="tsd-anchor-link">Changelog<a href="#md:changelog" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><a id="md:v200" class="tsd-anchor"></a><h3 class="tsd-anchor-link">v2.0.0<a href="#md:v200" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ul>
+<li>
+<p>Introduces <code>StringTokenizer</code>, an extension of <code>Tokenizer</code> that provides
+useful string utilities.</p>
+</li>
+<li>
+<p>The abstract <code>R</code> type in <code>Tokenizer&lt;T, R&gt;</code> no longer extends <code>Token</code> to
+provide more type flexibility in situations where a <code>position</code> is not necessary.</p>
+</li>
+<li>
+<p>A <code>peek</code> method was added that returns the value from the top of
+<code>vals</code> without unshifting it from <code>vals</code>.</p>
+</li>
+<li>
+<p>An <code>options</code> parameter was added to <code>prettyPrint</code> in <code>TokenizerError</code> that
+provides you with the ability to...</p>
+<ul>
+<li>Return a chunk of the source with the caret pointer</li>
+<li>Add line numbers to the left of each line</li>
+</ul>
+</li>
+</ul>
+<a id="md:breaking-changes" class="tsd-anchor"></a><h4 class="tsd-anchor-link">Breaking Changes<a href="#md:breaking-changes" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4><ul>
+<li><code>orphan_behavior</code> was removed from the <code>consume</code> function. Orphaned
+tokens are unshifted onto <code>vals</code>.</li>
+<li><code>next</code> was renamed to <code>shift</code>, and the <code>lookahead</code> parameter was removed.</li>
+</ul>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#md:fsnjstokenize"><span>@fsnjs/tokenize</span></a><ul><li><a href="#md:usage-notes"><span>Usage <wbr/>Notes</span></a></li><li><ul><li><a href="#md:tokenizer-error"><span>Tokenizer <wbr/>Error</span></a></li><li><ul><li><a href="#md:registercolorfunctions"><span>register<wbr/>Color<wbr/>Functions</span></a></li><li><a href="#md:registersyntaxhighlighter"><span>register<wbr/>Syntax<wbr/>Highlighter</span></a></li></ul></li></ul></li><li><a href="#md:changelog"><span>Changelog</span></a></li><li><ul><li><a href="#md:v200"><span>v2.0.0</span></a></li><li><ul><li><a href="#md:breaking-changes"><span>Breaking <wbr/>Changes</span></a></li></ul></li></ul></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="assets/icons.svg#icon-1"></use></svg><span>@fsnjs/tokenize</span></a><ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base="."><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>

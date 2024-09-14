@@ -6,6 +6,7 @@ export declare interface ErrorColors {
     red: ColorFunction;
     gray: ColorFunction;
     white: ColorFunction;
+    bgGray: ColorFunction;
 }
 
 /**
