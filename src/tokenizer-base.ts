@@ -1,4 +1,4 @@
-export abstract class TokenizerBase<T, R> {
+export abstract class TokenizerBase<T, R> extends Array<T> {
     /**
      * An array of tokens productd by `tokenize()`.
      *
@@ -10,10 +10,10 @@ export abstract class TokenizerBase<T, R> {
     public tokens = new Array<R>();
 
     /**
-     * Set to the length of the input values (`vals`) upon instantiation.
+     * Set to the length of the input values (`this`) upon instantiation.
      * @public
      */
-    public length: number;
+    public len: number;
 
     /**
      * Holds the current value as it is processed during tokenization.
@@ -23,11 +23,12 @@ export abstract class TokenizerBase<T, R> {
 
     /**
      * Constructor for the `Tokenizer` class.
-     * @param vals The input values to be tokenized. This array
+     * @param items The input values to be tokenized. This array
      * is iterated over in `onNextToken` to generate tokens.
      */
-    constructor(public vals: T[]) {
-        this.length = vals.length;
+    constructor(items: T[]) {
+        super(...items);
+        this.len = this.length;
     }
 
     /**
@@ -37,18 +38,18 @@ export abstract class TokenizerBase<T, R> {
      * @public
      */
     public get position(): number {
-        return this.length - this.tokens.length;
+        return this.len - this.tokens.length;
     }
 
     /**
      * Tokenizes the input values by processing them one at a time.
      *
-     * Each value in `vals` is processed by calling the abstract method
+     * Each value in `this` is processed by calling the abstract method
      * `onNextToken`, which must be implemented by any subclass of `Tokenizer`.
      * @public
      */
     public tokenize() {
-        while ((this._val = this.vals.shift())) {
+        while ((this._val = this.shift())) {
             this.onNextToken(this._val);
         }
         return this;
@@ -58,7 +59,7 @@ export abstract class TokenizerBase<T, R> {
      * Abstract method to process the next token.
      *
      * This method must be implemented by subclasses of `Tokenizer`.
-     * It defines how each value in `vals` should be converted into a token.
+     * It defines how each value in `this` should be converted into a token.
      *
      * @param val The next value to process into a token.
      *
@@ -67,7 +68,7 @@ export abstract class TokenizerBase<T, R> {
     public abstract onNextToken(val: T): any;
 
     /**
-     * Consumes a sequence of values from `vals`.
+     * Consumes a sequence of values from `this`.
      *
      * @returns An object that allows for the consumption of values,
      * providing methods `until` and `while`. These methods determine
@@ -81,7 +82,7 @@ export abstract class TokenizerBase<T, R> {
     };
 
     /**
-     * This method unshifts and returns the next value from `vals`
+     * This method unshifts and returns the next value from `this`
      * If no more values are available, will throw an error.
      *
      * @param errMsg An optional error message
@@ -92,25 +93,31 @@ export abstract class TokenizerBase<T, R> {
      * the method will throw an error with the given message; otherwise,
      * t will throw `Unexpected end of input`.
      */
-    public shift(errMsg?: string): T {
-        const next = this.vals.shift();
+    override shift(errMsg?: string): T {
+        const next = super.shift();
         if (!next) throw errMsg ?? 'Unexpected end of input.';
         return next;
     }
 
     /**
-     * This method returns the next value in the sequence to be processed.
+     * This method pops and returns the last value from `this`
      * If no more values are available, will throw an error.
      *
      * @param errMsg An optional error message
      *
-     * @returns The next value from the input sequence
+     * @returns The last value from the input sequence
      *
      * @throws If the sequence is empty and an `errMsg` is provided,
      * the method will throw an error with the given message; otherwise,
      * t will throw `Unexpected end of input`.
      */
+    override pop(errMsg?: string): T {
+        const last = super.pop();
+        if (!last) throw errMsg ?? 'Unexpected end of input';
+        return last;
+    }
+
     public peek(lookahead = 0): T | undefined {
-        return this.vals[lookahead];
+        return this[lookahead];
     }
 }

@@ -53,6 +53,12 @@ you can register a function that colorizes the output code with this method.
 
 ## Changelog
 
+### v2.1.0
+
+-   `TokenizerBase` now extends Array, removing the need to `vals`.
+    `TokenizerBase` overrides `shift` and `pop` methods, both of which
+    throw an error if `undefined` is returned.
+
 ### v2.0.0
 
 -   Introduces `StringTokenizer`, an extension of `Tokenizer` that provides

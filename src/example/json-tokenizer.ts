@@ -89,7 +89,7 @@ export class JsonTokenizer extends StringTokenizer<JsonToken> {
         const context: 'OBJ' | 'ARR' = endToken === '}' ? 'OBJ' : 'ARR';
 
         let val = '';
-        while (this.vals.length > 0) {
+        while (this.length > 0) {
             val = this.shift();
 
             // If we've reached the terminating character, we can return.
@@ -137,7 +137,7 @@ export class JsonTokenizer extends StringTokenizer<JsonToken> {
 
                 // If this is an array, then we can unshift the
                 // shifted value and push the value
-                this.vals.unshift(next);
+                this.unshift(next);
                 innerVals.push({
                     value: key,
                     position: this.position

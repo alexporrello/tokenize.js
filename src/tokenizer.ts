@@ -16,10 +16,10 @@ export abstract class Tokenizer<T, R> extends TokenizerBase<T, R> {
 
         return {
             until: (predicate: (val: T) => boolean) => {
-                while (this.vals.length > 0) {
+                while (this.length > 0) {
                     let next = this.shift();
                     if (predicate(next)) {
-                        this.vals.unshift(next);
+                        this.unshift(next);
                         return vals;
                     }
                     vals.push(next);
@@ -28,10 +28,10 @@ export abstract class Tokenizer<T, R> extends TokenizerBase<T, R> {
                 return vals;
             },
             while: (predicate: (val: T) => boolean) => {
-                while (this.vals.length > 0) {
+                while (this.length > 0) {
                     let next = this.shift();
                     if (!predicate(next)) {
-                        this.vals.unshift(next);
+                        this.unshift(next);
                         return vals;
                     }
                     vals.push(next);

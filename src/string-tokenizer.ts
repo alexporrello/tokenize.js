@@ -65,7 +65,7 @@ export abstract class StringTokenizer<R> extends TokenizerBase<string, R> {
      */
     override get position(): number {
         // Subtract 1 to account for `length`, which returns the `1-based` index.
-        return this.raw.length - this.vals.length - 1;
+        return this.raw.length - this.length - 1;
     }
 
     /**
@@ -82,10 +82,10 @@ export abstract class StringTokenizer<R> extends TokenizerBase<string, R> {
 
         return {
             until: (predicate: (val: string) => boolean) => {
-                while (this.vals.length > 0) {
+                while (this.length > 0) {
                     let next = this.shift();
                     if (predicate(next)) {
-                        this.vals.unshift(next);
+                        this.unshift(next);
                         return vals;
                     }
                     vals += next;
@@ -94,10 +94,10 @@ export abstract class StringTokenizer<R> extends TokenizerBase<string, R> {
                 return vals;
             },
             while: (predicate: (val: string) => boolean) => {
-                while (this.vals.length > 0) {
+                while (this.length > 0) {
                     let next = this.shift();
                     if (!predicate(next)) {
-                        this.vals.unshift(next);
+                        this.unshift(next);
                         return vals;
                     }
                     vals += next;
